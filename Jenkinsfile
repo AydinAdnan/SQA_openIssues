@@ -11,9 +11,9 @@ pipeline {
     agent any
 
     // ── Weekly Trigger ──────────────────────────────────────────────────
-    // Every Monday at 9:00 AM KST (00:00 UTC)
+    // Every Friday at 2:00 PM IST (08:30 UTC)
     triggers {
-        cron('0 0 * * 1')
+        cron('0 14 * * 5')
     }
 
     // ── Tools — Commented out to avoid 'Invalid tool type "nodejs"' if plugin is missing. ──
