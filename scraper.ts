@@ -29,12 +29,18 @@ const VIEW_ALL_URL = "http://sqa.bluebird.co.kr/view_all_bug_page.php";
 
 /** Device projects to scrape — { dropdownValue: displayName } */
 export const TARGET_PROJECTS: Record<string, string> = {
-    "92": "HF550",
+
+    "125": "HF550X_A13_SDM660",
+    "147": "HF550X_A14",
+    "129": "EF550_A13_SDM660",
     "145": "EF550_A14_SDM660",
     "132": "T10_A14",
     "138": "S10",
-    "99": "EK430",
-    "84": "EF401 Android",
+    "149": "EK430_A14_SDM660",
+    "103": "EF401 Android 10",
+    "144": "DXA800 A15",
+    "140": "Zbar Barcode Decoder"
+
 };
 
 // ── Private state (module-scoped) ───────────────────────────────────────────
