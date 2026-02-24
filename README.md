@@ -99,6 +99,13 @@ Create these in **Manage Jenkins → Credentials → Global**:
 | `d819dc76-b250-4164-a7a2-1a8eb98f220b` | Username + Password | `sqa.bluebird@gmail.com` (existing) |
 | `email_recipient` | Secret text | `aydinadnan545@gmail.com` (existing) |
 
+### Troubleshooting "nodejs" tool error
+If Jenkins says `Invalid tool type "nodejs"`, it means the **NodeJS Plugin** is not installed. You have two options:
+1. **Option A (Recommended)**: Go to **Manage Jenkins → Plugins → Available**, install the **NodeJS** plugin. Then go to **Global Tool Configuration** and add a NodeJS installation named `NodeJS-20`.
+2. **Option B**: Ensure Node.js is installed directly on your Jenkins server's OS and added to the PATH. In this case, you can remove the `tools { nodejs ... }` block from the `Jenkinsfile` (I have commented it out for you in the latest version).
+
+---
+
 ### Create the Pipeline Job
 
 1. **New Item** → **Pipeline** → Name: `SQA-Open-Defect-Report`

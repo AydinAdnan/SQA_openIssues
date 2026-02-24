@@ -11,15 +11,15 @@ pipeline {
     agent any
 
     // ── Weekly Trigger ──────────────────────────────────────────────────
-    // TESTING: triggers every minute — change back to '0 0 * * 1' for weekly
+    // Every Monday at 9:00 AM KST (00:00 UTC)
     triggers {
-        cron('* * * * *')
+        cron('0 0 * * 1')
     }
 
-    // ── Tools ───────────────────────────────────────────────────────────
-    tools {
-        nodejs 'NodeJS-20'
-    }
+    // ── Tools — Commented out to avoid 'Invalid tool type "nodejs"' if plugin is missing. ──
+    // tools {
+    //     nodejs 'NodeJS-20'
+    // }
 
     // ── Environment Variables ───────────────────────────────────────────
     environment {
@@ -29,10 +29,17 @@ pipeline {
     }
 
     stages {
+        stage('Check Environment') {
+            steps {
+                sh 'node -v'
+                sh 'npm -v'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing npm dependencies...'
-                sh 'npm ci'
+                sh 'npm install' // Use install instead of ci for better flexibility if lockfile mismatch
             }
         }
 
