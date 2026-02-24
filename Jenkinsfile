@@ -31,22 +31,22 @@ pipeline {
     stages {
         stage('Check Environment') {
             steps {
-                sh 'node -v'
-                sh 'npm -v'
+                bat 'node -v'
+                bat 'npm -v'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing npm dependencies...'
-                sh 'npm install' // Use install instead of ci for better flexibility if lockfile mismatch
+                bat 'npm install' // Use install instead of ci for better flexibility if lockfile mismatch
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
                 echo '🌐 Installing Chromium for Playwright...'
-                sh 'npx playwright install --with-deps chromium'
+                bat 'npx playwright install --with-deps chromium'
             }
         }
 
@@ -60,7 +60,7 @@ pipeline {
                         passwordVariable: 'EMAIL_PASS'
                     )
                 ]) {
-                    sh 'npx ts-node index.ts'
+                    bat 'npx ts-node index.ts'
                 }
             }
         }
