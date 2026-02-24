@@ -1,0 +1,25 @@
+{
+  "name": "sqa-portal-agent",
+  "version": "1.0.0",
+  "description": "Playwright automation agent for scraping MantisBT open defects and emailing reports",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "npx ts-node index.ts",
+    "build": "tsc",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "playwright": "^1.42.0",
+    "nodemailer": "^6.9.8",
+    "exceljs": "^4.4.0",
+    "dotenv": "^16.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.11.5",
+    "@types/nodemailer": "^6.4.14"
+  },
+  "keywords": ["playwright", "mantisbt", "automation", "defect-report"],
+  "license": "UNLICENSED"
+}
