@@ -86,7 +86,7 @@ export function buildEmailBody(issues: IssueRow[]): string {
   return `
 <div style="font-family:Arial,sans-serif;max-width:1200px;margin:0 auto;">
   <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:24px 32px;border-radius:8px 8px 0 0;">
-    <h1 style="margin:0;font-size:24px;">📋 OPEN DEFECT REPORT</h1>
+    <h1 style="margin:0;font-size:24px;">📋 OPEN ISSUES REPORT</h1>
     <p style="margin:8px 0 0;opacity:0.8;font-size:14px;">Generated on ${now}</p>
   </div>
 
@@ -109,7 +109,7 @@ export function buildEmailBody(issues: IssueRow[]): string {
 }
 
 /**
- * Send the defect report email using Nodemailer.
+ * Send the issues report email using Nodemailer.
  *
  * Environment variables required:
  *   EMAIL_USER       - Sender email address
@@ -146,7 +146,7 @@ export async function sendReport(
   const info = await transporter.sendMail({
     from: `"SQA Portal Agent" <${emailUser}>`,
     to: emailTo,
-    subject: "OPEN DEFECT REPORT",
+    subject: "OPEN ISSUES REPORT",
     html: htmlBody,
     attachments: [
       {

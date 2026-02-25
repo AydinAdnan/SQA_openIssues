@@ -3,3 +3,4 @@ dist/
 .env
 *.xlsx
 open_issues.json
+email_body.html

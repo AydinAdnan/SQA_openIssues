@@ -13,7 +13,7 @@ import * as fs from "fs";
 
 import { launchAndLogin, scrapeAllProjects, closeBrowser, type IssueRow } from "./scraper";
 import { generateExcel } from "./excel";
-import { buildEmailBody, sendReport } from "./mailer";
+import { buildEmailBody } from "./mailer";
 
 // ── Configuration ───────────────────────────────────────────────────────────
 // All credentials are injected via Jenkins environment variables:
@@ -22,7 +22,8 @@ import { buildEmailBody, sendReport } from "./mailer";
 const MANTIS_USERNAME = process.env.MANTIS_USERNAME ?? "";
 const MANTIS_PASSWORD = process.env.MANTIS_PASSWORD ?? "";
 const JSON_OUTPUT = path.resolve(__dirname, "open_issues.json");
-const EXCEL_OUTPUT = path.resolve(__dirname, "Open_Defects.xlsx");
+const EXCEL_OUTPUT = path.resolve(__dirname, "Open_Issues.xlsx");
+const HTML_OUTPUT = path.resolve(__dirname, "email_body.html");
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -63,7 +64,7 @@ function printIssuesTable(issues: IssueRow[]): void {
 
 async function main(): Promise<void> {
     console.log("═══════════════════════════════════════════════════");
-    console.log("  SQA Portal — Open Defect Report Agent");
+    console.log("  SQA Portal — Open Issues Report Agent");
     console.log("═══════════════════════════════════════════════════\n");
 
     // Validate required env vars
@@ -100,10 +101,11 @@ async function main(): Promise<void> {
         await generateExcel(issues, EXCEL_OUTPUT);
         console.log(`       ✔ Saved to ${EXCEL_OUTPUT}\n`);
 
-        // Step 5: Send email report
-        console.log("[5/5] Sending email report...");
+        // Step 5: Save email HTML body for Jenkins emailext
+        console.log("[5/5] Saving email HTML body...");
         const emailHtml = buildEmailBody(issues);
-        await sendReport(emailHtml, EXCEL_OUTPUT);
+        fs.writeFileSync(HTML_OUTPUT, emailHtml, "utf-8");
+        console.log(`       ✔ Saved to ${HTML_OUTPUT}`);
 
         console.log("\n═══════════════════════════════════════════════════");
         console.log("  ✅  All steps completed successfully!");

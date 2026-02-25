@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
-//  SQA Portal — Open Defect Report Agent
+//  SQA Portal — Open Issues Report Agent
 //  Declarative Jenkins Pipeline
 //
 //  Schedule : Every Monday at 9:00 AM KST (00:00 UTC)
-//  Purpose  : Scrape MantisBT for open defects across 6 device projects,
+//  Purpose  : Scrape MantisBT for open issues across 6 device projects,
 //             generate Excel + JSON reports, and email the results.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -39,7 +39,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing npm dependencies...'
-                sh 'npm install' // Use install instead of ci for better flexibility if lockfile mismatch
+                sh 'npm install'
             }
         }
 
@@ -53,26 +53,35 @@ pipeline {
         stage('Run Agent') {
             steps {
                 echo '🤖 Running SQA Portal Agent...'
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'd819dc76-b250-4164-a7a2-1a8eb98f220b',
-                        usernameVariable: 'EMAIL_USER',
-                        passwordVariable: 'EMAIL_PASS'
-                    )
-                ]) {
-                    sh 'npx ts-node index.ts'
-                }
+                sh 'npx ts-node index.ts'
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: 'Open_Defects.xlsx, open_issues.json',
+            archiveArtifacts artifacts: 'Open_Issues.xlsx, open_issues.json',
                              allowEmptyArchive: true
+
+            script {
+                def emailBody = ''
+                if (fileExists('email_body.html')) {
+                    emailBody = readFile(file: 'email_body.html')
+                } else {
+                    emailBody = '<p>Report generation may have failed. Check console output.</p>'
+                }
+
+                emailext(
+                    subject: "OPEN ISSUES REPORT",
+                    body: emailBody,
+                    mimeType: 'text/html',
+                    to: EMAIL_TO,
+                    attachmentsPattern: 'Open_Issues.xlsx'
+                )
+            }
         }
         success {
-            echo '✅ Open Defect Report generated and emailed successfully.'
+            echo '✅ Open Issues Report generated and emailed successfully.'
         }
         failure {
             echo '❌ Pipeline failed — check console output for details.'

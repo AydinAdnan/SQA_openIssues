@@ -1,6 +1,6 @@
-# SQA Portal — Open Defect Report Agent
+# SQA Portal — Open Issues Report Agent
 
-Automated Playwright agent that scrapes **MantisBT** for open defects across multiple device projects, generates reports (`JSON` + `Excel`), and emails the results.
+Automated Playwright agent that scrapes **MantisBT** for open issues across multiple device projects, generates reports (`JSON` + `Excel`), and emails the results.
 
 ---
 
@@ -61,7 +61,7 @@ npx ts-node index.ts
 | **1/5** | Launch headless Chromium & log into MantisBT |
 | **2/5** | Scrape open issues across all target projects |
 | **3/5** | Save results to `open_issues.json` |
-| **4/5** | Generate `Open_Defects.xlsx` with styled worksheet |
+| **4/5** | Generate `Open_Issues.xlsx` with styled worksheet |
 | **5/5** | Email HTML report with Excel attachment |
 
 ---
@@ -108,7 +108,7 @@ If Jenkins says `Invalid tool type "nodejs"`, it means the **NodeJS Plugin** is 
 
 ### Create the Pipeline Job
 
-1. **New Item** → **Pipeline** → Name: `SQA-Open-Defect-Report`
+1. **New Item** → **Pipeline** → Name: `SQA-Open-Issues-Report`
 2. **Pipeline** section → **Pipeline script from SCM** (or paste Jenkinsfile)
 3. The `Jenkinsfile` already has the weekly trigger built in
 
@@ -131,9 +131,9 @@ To change the schedule:
 
 The email includes:
 
-- **Subject**: `OPEN DEFECT REPORT`
+- **Subject**: `OPEN ISSUES REPORT`
 - **Body**: Styled HTML with project summary table + full issue list (severity-colored)
-- **Attachment**: `Open_Defects.xlsx`
+- **Attachment**: `Open_Issues.xlsx`
 
 ---
 
@@ -142,7 +142,7 @@ The email includes:
 | File | Description |
 |------|-------------|
 | `open_issues.json` | All open issues in JSON format |
-| `Open_Defects.xlsx` | Styled Excel workbook with headers and formatting |
+| `Open_Issues.xlsx` | Styled Excel workbook with headers and formatting |
 
 ---
 

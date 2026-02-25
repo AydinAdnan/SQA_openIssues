@@ -13,7 +13,7 @@ import type { IssueRow } from "./scraper";
 /**
  * Create an Excel (.xlsx) file from the provided issues array.
  *
- * The workbook will contain a single sheet named "Open Defects" with columns:
+ * The workbook will contain a single sheet named "Open Issues" with columns:
  *   ID | Project | Severity | Status | Resolution | Summary
  */
 export async function generateExcel(
@@ -24,7 +24,7 @@ export async function generateExcel(
     workbook.creator = "SQA Portal Agent";
     workbook.created = new Date();
 
-    const sheet = workbook.addWorksheet("Open Defects");
+    const sheet = workbook.addWorksheet("Open Issues");
 
     // Define columns
     sheet.columns = [
