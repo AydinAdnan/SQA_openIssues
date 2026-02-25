@@ -23,9 +23,9 @@ pipeline {
 
     // ── Environment Variables ───────────────────────────────────────────
     environment {
-        MANTIS_USERNAME = credentials('mantis-username')
-        MANTIS_PASSWORD = credentials('mantis-password')
-        EMAIL_TO        = credentials('email_recipient')
+        MANTIS_USERNAME = credentials('sqaportal-username')
+        MANTIS_PASSWORD = credentials('sqaportal-password')
+        EMAIL_TO        = credentials('sqa_fwd_email')
     }
 
     stages {
