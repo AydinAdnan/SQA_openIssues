@@ -8,6 +8,7 @@
  * Run:  npx ts-node index.ts
  */
 
+import * as dotenv from "dotenv";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -16,8 +17,8 @@ import { generateExcel } from "./excel";
 import { buildEmailBody } from "./mailer";
 
 // ── Configuration ───────────────────────────────────────────────────────────
-// All credentials are injected via Jenkins environment variables:
-//   MANTIS_USERNAME, MANTIS_PASSWORD, EMAIL_USER, EMAIL_PASS, EMAIL_TO
+// Loads .env for local development; in Jenkins, env vars are injected by the pipeline.
+dotenv.config();
 
 const MANTIS_USERNAME = process.env.MANTIS_USERNAME ?? "";
 const MANTIS_PASSWORD = process.env.MANTIS_PASSWORD ?? "";
