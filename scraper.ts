@@ -8,6 +8,7 @@
  * - Scrapes the buglist table
  */
 
+import * as path from "path";
 import { chromium, type Browser, type BrowserContext, type Page } from "playwright";
 
 // ── Data Model ──────────────────────────────────────────────────────────────
@@ -66,37 +67,61 @@ export async function launchAndLogin(
         args: [
             '--ignore-certificate-errors',
             '--unsafely-treat-insecure-origin-as-secure=http://sqa.bluebird.co.kr',
+            // CI/Jenkins-specific flags for stability
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--disable-extensions',
         ],
     });
     _context = await _browser.newContext({ ignoreHTTPSErrors: true });
     const page = await _context.newPage();
 
-    // 2. Navigate to the login page
-    await page.goto(LOGIN_URL, { waitUntil: "networkidle" });
+    // Use longer default timeout in CI environments
+    page.setDefaultTimeout(60_000);
+    page.setDefaultNavigationTimeout(60_000);
 
-    // 2b. Handle Chromium's HTTP security interstitial if it appears
-    const continueBtn = page.getByRole("button", { name: "Continue to site" });
-    if (await continueBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        console.log("       → Bypassing HTTP security warning...");
-        await continueBtn.click();
+    try {
+        // 2. Navigate to the login page
+        await page.goto(LOGIN_URL, { waitUntil: "networkidle", timeout: 60_000 });
+
+        // 2b. Handle Chromium's HTTP security interstitial if it appears
+        const continueBtn = page.getByRole("button", { name: "Continue to site" });
+        if (await continueBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+            console.log("       → Bypassing HTTP security warning...");
+            await continueBtn.click();
+            await page.waitForLoadState("networkidle");
+        }
+
+        // 3. Fill username and click Login to proceed to password step
+        await page.locator('input[name="username"]').waitFor({ state: "visible", timeout: 30_000 });
+        await page.locator('input[name="username"]').fill(username);
+
+        // MantisBT may use a two-step login: submit username first, then password
+        // Click the Login button to submit the username
+        await page.getByRole("button", { name: "Login" }).click();
         await page.waitForLoadState("networkidle");
+
+        // 4. Wait for and fill the password field (appears after username step)
+        await page.locator('input[name="password"]').waitFor({ state: "visible", timeout: 30_000 });
+        await page.locator('input[name="password"]').fill(password);
+
+        // 5. Click Login again to submit credentials
+        await page.getByRole("button", { name: "Login" }).click();
+
+        // 6. Wait for navigation after login
+        await page.waitForLoadState("networkidle");
+
+        console.log(`       → Logged in as "${username}"`);
+        return page;
+    } catch (error) {
+        // Save a debug screenshot on failure for CI troubleshooting
+        const screenshotPath = path.resolve(__dirname, "debug_login_failure.png");
+        await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => { });
+        console.error(`       📸 Debug screenshot saved to: ${screenshotPath}`);
+        throw error;
     }
-
-    // 3. Fill username and submit
-    await page.locator('input[name="username"]').fill(username);
-    await page.locator('input[name="username"]').press("Tab");
-
-    // 4. Fill password
-    await page.locator('input[name="password"]').fill(password);
-
-    // 5. Click Login
-    await page.getByRole("button", { name: "Login" }).click();
-
-    // 6. Wait for navigation after login
-    await page.waitForLoadState("networkidle");
-
-    console.log(`       → Logged in as "${username}"`);
-    return page;
 }
 
 /**

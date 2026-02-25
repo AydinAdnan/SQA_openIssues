@@ -85,7 +85,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'Open_Issues.xlsx, open_issues.json',
+            archiveArtifacts artifacts: 'Open_Issues.xlsx, open_issues.json, debug_login_failure.png',
                              allowEmptyArchive: true
 
             script {
