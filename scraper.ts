@@ -73,9 +73,17 @@ export async function launchAndLogin(
             '--disable-dev-shm-usage',
             '--disable-gpu',
             '--disable-extensions',
+            '--lang=en-US',
         ],
     });
-    _context = await _browser.newContext({ ignoreHTTPSErrors: true });
+    _context = await _browser.newContext({
+        ignoreHTTPSErrors: true,
+        locale: 'en-US',
+        timezoneId: 'Asia/Kolkata',
+        extraHTTPHeaders: {
+            'Accept-Language': 'en-US,en;q=0.9'
+        }
+    });
     const page = await _context.newPage();
 
     // Use longer default timeout in CI environments
