@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════
 //  SQA Portal — Open Issues Report Agent
-//  Declarative Jenkins Pipeline
+//  Declarative Jenkins Pipeline (Linux)
 //
-//  Schedule : Every Monday at 9:00 AM KST (00:00 UTC)
-//  Purpose  : Scrape MantisBT for open issues across 6 device projects,
+//  Schedule : Every Friday at 2:00 PM IST (08:30 UTC)
+//  Purpose  : Scrape MantisBT for open issues across device projects,
 //             generate Excel + JSON reports, and email the results.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -11,15 +11,9 @@ pipeline {
     agent any
 
     // ── Weekly Trigger ──────────────────────────────────────────────────
-    // Every Friday at 2:00 PM IST (08:30 UTC)
     triggers {
         cron('0 11 * * 5')
     }
-
-    // ── Tools — Commented out to avoid 'Invalid tool type "nodejs"' if plugin is missing. ──
-    // tools {
-    //     nodejs 'NodeJS-20'
-    // }
 
     // ── Environment Variables ───────────────────────────────────────────
     environment {
@@ -31,54 +25,29 @@ pipeline {
     stages {
         stage('Check Environment') {
             steps {
-                script {
-                    if (isUnix()) {
-                        sh 'node -v'
-                        sh 'npm -v'
-                    } else {
-                        bat 'node -v'
-                        bat 'npm -v'
-                    }
-                }
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing npm dependencies...'
-                script {
-                    if (isUnix()) {
-                        sh 'npm install'
-                    } else {
-                        bat 'npm install'
-                    }
-                }
+                sh 'npm install'
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
                 echo '🌐 Installing Chromium for Playwright...'
-                script {
-                    if (isUnix()) {
-                        sh 'npx playwright install'
-                    } else {
-                        bat 'npx playwright install'
-                    }
-                }
+                sh 'npx playwright install --with-deps chromium'
             }
         }
 
         stage('Run Agent') {
             steps {
                 echo '🤖 Running SQA Portal Agent...'
-                script {
-                    if (isUnix()) {
-                        sh 'npx ts-node index.ts'
-                    } else {
-                        bat 'npx ts-node index.ts'
-                    }
-                }
+                sh 'npx ts-node index.ts'
             }
         }
     }
