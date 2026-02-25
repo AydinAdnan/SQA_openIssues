@@ -59,9 +59,10 @@ export async function launchAndLogin(
     username: string,
     password: string
 ): Promise<Page> {
-    // 1. Launch Chromium in headless mode
+    // 1. Launch Chromium — headless by default (set HEADLESS=false for local debugging)
+    const headless = (process.env.HEADLESS ?? "true").toLowerCase() !== "false";
     _browser = await chromium.launch({
-        headless: true,
+        headless,
         args: ['--ignore-certificate-errors'],
     });
     _context = await _browser.newContext({ ignoreHTTPSErrors: true });
@@ -69,6 +70,14 @@ export async function launchAndLogin(
 
     // 2. Navigate to the login page
     await page.goto(LOGIN_URL, { waitUntil: "networkidle" });
+
+    // 2b. Handle Chromium's HTTP security interstitial if it appears
+    const continueBtn = page.getByRole("button", { name: "Continue to site" });
+    if (await continueBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        console.log("       → Bypassing HTTP security warning...");
+        await continueBtn.click();
+        await page.waitForLoadState("networkidle");
+    }
 
     // 3. Fill username and submit
     await page.locator('input[name="username"]').fill(username);
