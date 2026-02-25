@@ -18,7 +18,11 @@ import { buildEmailBody } from "./mailer";
 
 // ── Configuration ───────────────────────────────────────────────────────────
 // Loads .env for local development; in Jenkins, env vars are injected by the pipeline.
-dotenv.config();
+
+// Load .env ONLY for local runs, not Jenkins
+if (!process.env.JENKINS_URL) {
+    dotenv.config();
+}
 
 const MANTIS_USERNAME = process.env.MANTIS_USERNAME ?? "";
 const MANTIS_PASSWORD = process.env.MANTIS_PASSWORD ?? "";
