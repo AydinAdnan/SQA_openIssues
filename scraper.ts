@@ -63,7 +63,10 @@ export async function launchAndLogin(
     const headless = (process.env.HEADLESS ?? "true").toLowerCase() !== "false";
     _browser = await chromium.launch({
         headless,
-        args: ['--ignore-certificate-errors'],
+        args: [
+            '--ignore-certificate-errors',
+            '--unsafely-treat-insecure-origin-as-secure=http://sqa.bluebird.co.kr',
+        ],
     });
     _context = await _browser.newContext({ ignoreHTTPSErrors: true });
     const page = await _context.newPage();
