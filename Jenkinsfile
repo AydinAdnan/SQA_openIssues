@@ -13,7 +13,7 @@ pipeline {
     // ── Weekly Trigger ──────────────────────────────────────────────────
     // Every Friday at 2:00 PM IST (08:30 UTC)
     triggers {
-        cron('0 9 * * 3')
+        cron('20 12 * * 3')
     }
 
     // ── Tools — Commented out to avoid 'Invalid tool type "nodejs"' if plugin is missing. ──
