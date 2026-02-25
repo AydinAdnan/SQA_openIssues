@@ -18,6 +18,7 @@ export interface IssueRow {
     project: string;
     severity: string;
     status: string;
+    assignee: string;
     resolution: string;
     summary: string;
 }
@@ -135,6 +136,7 @@ export async function scrapeOpenIssues(page: Page, projectValue: string): Promis
             project: string;
             severity: string;
             status: string;
+            assignee: string;
             resolution: string;
             summary: string;
         }> = [];
@@ -157,11 +159,24 @@ export async function scrapeOpenIssues(page: Page, projectValue: string): Promis
             // Only keep rows where resolution is "open"
             if (resolution.toLowerCase() !== "open") continue;
 
+            // Parse the status column — it may contain combined text like:
+            //   "assigned ([SW IN] naveen.r)"
+            // We split into clean status + assignee name.
+            const rawStatus = getText(8);
+            const statusMatch = rawStatus.match(/^(\S+)\s+\((.+)\)$/);
+            const cleanStatus = statusMatch ? statusMatch[1] : rawStatus;
+            const assignee = statusMatch ? statusMatch[2] : "";
+
+            // Only keep open or assigned statuses (exclude closed, resolved, etc.)
+            const statusLower = cleanStatus.toLowerCase();
+            if (statusLower !== "open" && statusLower !== "assigned") continue;
+
             results.push({
                 id: getText(1),
                 project: getText(2),
                 severity: getText(3),
-                status: getText(8),
+                status: cleanStatus,
+                assignee: assignee,
                 resolution: resolution,
                 summary: getText(9),
             });

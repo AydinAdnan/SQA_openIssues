@@ -15,23 +15,23 @@ import type { IssueRow } from "./scraper";
  * Convert an array of IssueRow objects into a styled HTML `<table>` string.
  */
 export function buildHtmlTable(issues: IssueRow[]): string {
-    if (issues.length === 0) {
-        return `<p style="font-family:Arial,sans-serif;color:#666;">No open issues found.</p>`;
-    }
+  if (issues.length === 0) {
+    return `<p style="font-family:Arial,sans-serif;color:#666;">No open issues found.</p>`;
+  }
 
-    const headers = ["#", "ID", "Project", "Severity", "Status", "Resolution", "Summary"];
+  const headers = ["#", "ID", "Project", "Severity", "Status", "Assignee", "Resolution", "Summary"];
 
-    const severityColor: Record<string, string> = {
-        crash: "#dc3545",
-        block: "#dc3545",
-        major: "#fd7e14",
-        minor: "#ffc107",
-        tweak: "#17a2b8",
-        trivial: "#6c757d",
-        feature: "#28a745",
-    };
+  const severityColor: Record<string, string> = {
+    crash: "#dc3545",
+    block: "#dc3545",
+    major: "#fd7e14",
+    minor: "#ffc107",
+    tweak: "#17a2b8",
+    trivial: "#6c757d",
+    feature: "#28a745",
+  };
 
-    let html = `
+  let html = `
 <table style="border-collapse:collapse;width:100%;font-family:Arial,sans-serif;font-size:13px;">
   <thead>
     <tr style="background:#1a1a2e;color:#fff;">
@@ -40,49 +40,50 @@ export function buildHtmlTable(issues: IssueRow[]): string {
   </thead>
   <tbody>`;
 
-    issues.forEach((issue, idx) => {
-        const bg = idx % 2 === 0 ? "#f8f9fa" : "#ffffff";
-        const sevColor = severityColor[issue.severity.toLowerCase()] ?? "#6c757d";
+  issues.forEach((issue, idx) => {
+    const bg = idx % 2 === 0 ? "#f8f9fa" : "#ffffff";
+    const sevColor = severityColor[issue.severity.toLowerCase()] ?? "#6c757d";
 
-        html += `
+    html += `
     <tr style="background:${bg};">
       <td style="padding:8px 12px;border:1px solid #dee2e6;text-align:center;">${idx + 1}</td>
       <td style="padding:8px 12px;border:1px solid #dee2e6;font-weight:bold;">${issue.id}</td>
       <td style="padding:8px 12px;border:1px solid #dee2e6;">${issue.project}</td>
       <td style="padding:8px 12px;border:1px solid #dee2e6;color:${sevColor};font-weight:bold;">${issue.severity}</td>
       <td style="padding:8px 12px;border:1px solid #dee2e6;">${issue.status}</td>
+      <td style="padding:8px 12px;border:1px solid #dee2e6;">${issue.assignee}</td>
       <td style="padding:8px 12px;border:1px solid #dee2e6;">${issue.resolution}</td>
       <td style="padding:8px 12px;border:1px solid #dee2e6;">${issue.summary}</td>
     </tr>`;
-    });
+  });
 
-    html += `
+  html += `
   </tbody>
 </table>`;
 
-    return html;
+  return html;
 }
 
 /**
  * Build the full email HTML body with header, summary, and table.
  */
 export function buildEmailBody(issues: IssueRow[]): string {
-    const now = new Date().toLocaleString("en-US", {
-        dateStyle: "full",
-        timeStyle: "short",
-    });
+  const now = new Date().toLocaleString("en-US", {
+    dateStyle: "full",
+    timeStyle: "short",
+  });
 
-    // Count per project
-    const projectCounts: Record<string, number> = {};
-    for (const issue of issues) {
-        projectCounts[issue.project] = (projectCounts[issue.project] ?? 0) + 1;
-    }
+  // Count per project
+  const projectCounts: Record<string, number> = {};
+  for (const issue of issues) {
+    projectCounts[issue.project] = (projectCounts[issue.project] ?? 0) + 1;
+  }
 
-    const summaryRows = Object.entries(projectCounts)
-        .map(([proj, count]) => `<tr><td style="padding:4px 12px;border:1px solid #dee2e6;">${proj}</td><td style="padding:4px 12px;border:1px solid #dee2e6;text-align:center;font-weight:bold;">${count}</td></tr>`)
-        .join("\n");
+  const summaryRows = Object.entries(projectCounts)
+    .map(([proj, count]) => `<tr><td style="padding:4px 12px;border:1px solid #dee2e6;">${proj}</td><td style="padding:4px 12px;border:1px solid #dee2e6;text-align:center;font-weight:bold;">${count}</td></tr>`)
+    .join("\n");
 
-    return `
+  return `
 <div style="font-family:Arial,sans-serif;max-width:1200px;margin:0 auto;">
   <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:24px 32px;border-radius:8px 8px 0 0;">
     <h1 style="margin:0;font-size:24px;">📋 OPEN DEFECT REPORT</h1>
@@ -118,42 +119,42 @@ export function buildEmailBody(issues: IssueRow[]): string {
  *   EMAIL_PORT       - SMTP port (defaults to 587)
  */
 export async function sendReport(
-    htmlBody: string,
-    attachmentPath: string
+  htmlBody: string,
+  attachmentPath: string
 ): Promise<void> {
-    const emailUser = process.env.EMAIL_USER ?? "";
-    const emailPass = process.env.EMAIL_PASS ?? "";
-    const emailTo = process.env.EMAIL_TO ?? "aydinadnan545@gmail.com";
-    const emailHost = process.env.EMAIL_HOST ?? "smtp.gmail.com";
-    const emailPort = parseInt(process.env.EMAIL_PORT ?? "587", 10);
+  const emailUser = process.env.EMAIL_USER ?? "";
+  const emailPass = process.env.EMAIL_PASS ?? "";
+  const emailTo = process.env.EMAIL_TO ?? "aydinadnan545@gmail.com";
+  const emailHost = process.env.EMAIL_HOST ?? "smtp.gmail.com";
+  const emailPort = parseInt(process.env.EMAIL_PORT ?? "587", 10);
 
-    if (!emailUser || !emailPass) {
-        console.log("       ⚠ EMAIL_USER / EMAIL_PASS not set — skipping email.");
-        return;
-    }
+  if (!emailUser || !emailPass) {
+    console.log("       ⚠ EMAIL_USER / EMAIL_PASS not set — skipping email.");
+    return;
+  }
 
-    const transporter = nodemailer.createTransport({
-        host: emailHost,
-        port: emailPort,
-        secure: emailPort === 465,
-        auth: {
-            user: emailUser,
-            pass: emailPass,
-        },
-    });
+  const transporter = nodemailer.createTransport({
+    host: emailHost,
+    port: emailPort,
+    secure: emailPort === 465,
+    auth: {
+      user: emailUser,
+      pass: emailPass,
+    },
+  });
 
-    const info = await transporter.sendMail({
-        from: `"SQA Portal Agent" <${emailUser}>`,
-        to: emailTo,
-        subject: "OPEN DEFECT REPORT",
-        html: htmlBody,
-        attachments: [
-            {
-                filename: path.basename(attachmentPath),
-                path: attachmentPath,
-            },
-        ],
-    });
+  const info = await transporter.sendMail({
+    from: `"SQA Portal Agent" <${emailUser}>`,
+    to: emailTo,
+    subject: "OPEN DEFECT REPORT",
+    html: htmlBody,
+    attachments: [
+      {
+        filename: path.basename(attachmentPath),
+        path: attachmentPath,
+      },
+    ],
+  });
 
-    console.log(`       ✔ Email sent! Message ID: ${info.messageId}`);
+  console.log(`       ✔ Email sent! Message ID: ${info.messageId}`);
 }

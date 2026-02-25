@@ -35,8 +35,8 @@ function printIssuesTable(issues: IssueRow[]): void {
     }
 
     // Calculate column widths
-    const cols: (keyof IssueRow)[] = ["id", "project", "severity", "status", "resolution", "summary"];
-    const headers = ["ID", "Project", "Severity", "Status", "Resolution", "Summary"];
+    const cols: (keyof IssueRow)[] = ["id", "project", "severity", "status", "assignee", "resolution", "summary"];
+    const headers = ["ID", "Project", "Severity", "Status", "Assignee", "Resolution", "Summary"];
     const widths = headers.map((h, i) => {
         const colKey = cols[i];
         return Math.max(h.length, ...issues.map((r) => r[colKey].length));

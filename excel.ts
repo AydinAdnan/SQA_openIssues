@@ -32,6 +32,7 @@ export async function generateExcel(
         { header: "Project", key: "project", width: 25 },
         { header: "Severity", key: "severity", width: 14 },
         { header: "Status", key: "status", width: 18 },
+        { header: "Assignee", key: "assignee", width: 25 },
         { header: "Resolution", key: "resolution", width: 14 },
         { header: "Summary", key: "summary", width: 60 },
     ];
