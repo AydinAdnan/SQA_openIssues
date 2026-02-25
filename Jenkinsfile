@@ -20,6 +20,7 @@ pipeline {
         MANTIS_USERNAME = credentials('sqaportal-username')
         MANTIS_PASSWORD = credentials('sqaportal-password')
         EMAIL_TO        = credentials('sqa_fwd_email')
+        EMAIL_CREDS     = credentials('865c1fc9-ea1e-43e7-add0-056eafec2165')
     }
 
     stages {
@@ -70,6 +71,8 @@ pipeline {
                     body: emailBody,
                     mimeType: 'text/html',
                     to: EMAIL_TO,
+                    from: EMAIL_CREDS_USR,
+                    replyTo: EMAIL_CREDS_USR,
                     attachmentsPattern: 'Open_Issues.xlsx'
                 )
             }
