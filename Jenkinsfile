@@ -31,29 +31,54 @@ pipeline {
     stages {
         stage('Check Environment') {
             steps {
-                sh 'node -v'
-                sh 'npm -v'
+                script {
+                    if (isUnix()) {
+                        sh 'node -v'
+                        sh 'npm -v'
+                    } else {
+                        bat 'node -v'
+                        bat 'npm -v'
+                    }
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing npm dependencies...'
-                sh 'npm install'
+                script {
+                    if (isUnix()) {
+                        sh 'npm install'
+                    } else {
+                        bat 'npm install'
+                    }
+                }
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
                 echo '🌐 Installing Chromium for Playwright...'
-                sh 'npx playwright install'
+                script {
+                    if (isUnix()) {
+                        sh 'npx playwright install'
+                    } else {
+                        bat 'npx playwright install'
+                    }
+                }
             }
         }
 
         stage('Run Agent') {
             steps {
                 echo '🤖 Running SQA Portal Agent...'
-                sh 'npx ts-node index.ts'
+                script {
+                    if (isUnix()) {
+                        sh 'npx ts-node index.ts'
+                    } else {
+                        bat 'npx ts-node index.ts'
+                    }
+                }
             }
         }
     }
