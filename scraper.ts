@@ -60,8 +60,11 @@ export async function launchAndLogin(
     password: string
 ): Promise<Page> {
     // 1. Launch Chromium in headless mode
-    _browser = await chromium.launch({ headless: true });
-    _context = await _browser.newContext();
+    _browser = await chromium.launch({
+        headless: true,
+        args: ['--ignore-certificate-errors'],
+    });
+    _context = await _browser.newContext({ ignoreHTTPSErrors: true });
     const page = await _context.newPage();
 
     // 2. Navigate to the login page
