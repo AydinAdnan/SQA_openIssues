@@ -60,7 +60,7 @@ export async function launchAndLogin(
     password: string
 ): Promise<Page> {
     // 1. Launch Chromium in headless mode
-    _browser = await chromium.launch({ headless: false });
+    _browser = await chromium.launch({ headless: true });
     _context = await _browser.newContext();
     const page = await _context.newPage();
 
