@@ -59,7 +59,11 @@ export const TARGET_PROJECTS: Record<string, string> = {
     "149": "EK430_A14_SDM660",
     "103": "EF401 Android 10",
     "144": "DXA800 A15",
-    "140": "Zbar Barcode Decoder"
+    "140": "Zbar Barcode Decoder",
+    "20": "Application",
+    "82": "EMM",
+    "121": "MDM",
+    "131": "Device Finder Application"
 
 };
 
