@@ -299,6 +299,9 @@ export async function scrapeOpenIssues(page: Page, projectValue: string): Promis
             const cleanStatus = statusMatch ? statusMatch[1] : rawStatus;
             const assignee = statusMatch ? statusMatch[2] : "";
 
+            // Filter out issues where the assignee contains "[SW2]" (case-insensitive check)
+            if (assignee.toLowerCase().includes("[sw2]")) continue;
+
             // Secondary filter: only keep issues that are "open" or "assigned"
             // (excludes "resolved", "closed", "feedback", etc.)
             const statusLower = cleanStatus.toLowerCase();

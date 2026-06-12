@@ -4,3 +4,4 @@ dist/
 *.xlsx
 open_issues.json
 email_body.html
+gcp-service-account.json

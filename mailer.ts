@@ -107,7 +107,7 @@ export function buildHtmlTable(issues: IssueRow[]): string {
 /**
  * Build the full email HTML body with header, summary, and table.
  */
-export function buildEmailBody(issues: IssueRow[]): string {
+export function buildEmailBody(issues: IssueRow[], sheetUrl?: string): string {
 
   // Create a human-readable timestamp for the report generation time
   // toLocaleString formats: "Friday, February 27, 2026 at 2:41 PM"
@@ -152,6 +152,17 @@ export function buildEmailBody(issues: IssueRow[]): string {
 
   <!-- ── Body content ── -->
   <div style="padding:20px 32px;background:#fff;border:1px solid #dee2e6;">
+
+    ${sheetUrl ? `
+    <!-- Google Sheet link button -->
+    <div style="margin-bottom:20px;">
+      <a href="${sheetUrl}" target="_blank"
+         style="display:inline-block;padding:12px 24px;background:#1a73e8;color:#fff;
+                font-size:15px;font-weight:bold;text-decoration:none;border-radius:6px;">
+        📊 View Google Sheet
+      </a>
+      <p style="margin:6px 0 0;font-size:12px;color:#888;">Anyone with this link can view the sheet.</p>
+    </div>` : ''}
 
     <!-- Summary table: one row per project showing how many open issues it has -->
     <h3 style="margin:0 0 12px;color:#1a1a2e;">Summary by Project</h3>

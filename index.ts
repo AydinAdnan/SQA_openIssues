@@ -24,8 +24,8 @@ import * as fs from "fs";
 // - IssueRow        → TypeScript interface that describes one issue record
 import { launchAndLogin, scrapeAllProjects, closeBrowser, type IssueRow } from "./scraper";
 
-// Import the function that creates a styled .xlsx file from the issues array
-import { generateExcel } from "./excel";
+// Import the function that creates a Google Sheet from the issues array and returns a link
+import { createGoogleSheet } from "./gsheet";
 
 // Import the function that converts the issues array into an HTML email body
 import { buildEmailBody } from "./mailer";
@@ -47,11 +47,7 @@ const MANTIS_USERNAME = process.env.MANTIS_USERNAME ?? "";
 const MANTIS_PASSWORD = process.env.MANTIS_PASSWORD ?? "";
 
 // Build the full absolute path for the JSON output file
-// __dirname is the directory this script lives in
 const JSON_OUTPUT = path.resolve(__dirname, "open_issues.json");
-
-// Build the full absolute path for the Excel output file
-const EXCEL_OUTPUT = path.resolve(__dirname, "Open_Issues.xlsx");
 
 // Build the full absolute path for the HTML email body file
 const HTML_OUTPUT = path.resolve(__dirname, "email_body.html");
@@ -161,23 +157,23 @@ async function main(): Promise<void> {
 
         console.log(`       ✔ Saved to ${JSON_OUTPUT}\n`);
 
-        // ── Step 4: Generate a styled Excel workbook ───────────────────────
-        console.log("[4/5] Generating Excel report...");
+        // ── Step 4: Create Google Sheet ────────────────────────────────────
+        console.log("[4/5] Creating Google Sheet...");
 
-        // generateExcel uses ExcelJS to create an .xlsx file with headers,
-        // borders, colour-coded header row, and alternating row shading
-        await generateExcel(issues, EXCEL_OUTPUT);
+        // createGoogleSheet uploads issues to a new named Google Sheet,
+        // makes it publicly viewable, and returns the shareable URL
+        const sheetUrl = await createGoogleSheet(issues);
 
-        console.log(`       ✔ Saved to ${EXCEL_OUTPUT}\n`);
+        console.log(`       ✔ Sheet available at: ${sheetUrl}\n`);
 
-        // ── Step 5: Write the HTML email body for Jenkins emailext ────────
+        // ── Step 5: Write the HTML email body ─────────────────────────────
         console.log("[5/5] Saving email HTML body...");
 
         // buildEmailBody converts the issues array into a fully-styled HTML string
-        const emailHtml = buildEmailBody(issues);
+        // and embeds the Google Sheet link as a button
+        const emailHtml = buildEmailBody(issues, sheetUrl);
 
-        // Write that HTML string to disk so the Jenkinsfile can reference it
-        // with the EMAIL_HTML_BODY environment variable or attach it inline
+        // Write that HTML string to disk so the pipeline can send it via emailext
         fs.writeFileSync(HTML_OUTPUT, emailHtml, "utf-8");
 
         console.log(`       ✔ Saved to ${HTML_OUTPUT}`);
