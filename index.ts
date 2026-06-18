@@ -24,8 +24,8 @@ import * as fs from "fs";
 // - IssueRow        → TypeScript interface that describes one issue record
 import { launchAndLogin, scrapeAllProjects, closeBrowser, type IssueRow } from "./scraper";
 
-// Import the function that creates a Google Sheet from the issues array and returns a link
-import { createGoogleSheet } from "./gsheet";
+// Import the function that creates an Excel workbook from the issues array
+import { generateExcel } from "./excel";
 
 // Import the function that converts the issues array into an HTML email body
 import { buildEmailBody } from "./mailer";
@@ -48,6 +48,9 @@ const MANTIS_PASSWORD = process.env.MANTIS_PASSWORD ?? "";
 
 // Build the full absolute path for the JSON output file
 const JSON_OUTPUT = path.resolve(__dirname, "open_issues.json");
+
+// Build the full absolute path for the Excel output workbook
+const EXCEL_OUTPUT = path.resolve(__dirname, "Open_Issues.xlsx");
 
 // Build the full absolute path for the HTML email body file
 const HTML_OUTPUT = path.resolve(__dirname, "email_body.html");
@@ -157,21 +160,19 @@ async function main(): Promise<void> {
 
         console.log(`       ✔ Saved to ${JSON_OUTPUT}\n`);
 
-        // ── Step 4: Create Google Sheet ────────────────────────────────────
-        console.log("[4/5] Creating Google Sheet...");
+        // ── Step 4: Generate Excel Workbook ─────────────────────────────────
+        console.log("[4/5] Generating Excel workbook...");
 
-        // createGoogleSheet uploads issues to a new named Google Sheet,
-        // makes it publicly viewable, and returns the shareable URL
-        const sheetUrl = await createGoogleSheet(issues);
+        // generateExcel writes the issues array to a beautifully styled Excel workbook on disk
+        await generateExcel(issues, EXCEL_OUTPUT);
 
-        console.log(`       ✔ Sheet available at: ${sheetUrl}\n`);
+        console.log(`       ✔ Saved to ${EXCEL_OUTPUT}\n`);
 
         // ── Step 5: Write the HTML email body ─────────────────────────────
         console.log("[5/5] Saving email HTML body...");
 
         // buildEmailBody converts the issues array into a fully-styled HTML string
-        // and embeds the Google Sheet link as a button
-        const emailHtml = buildEmailBody(issues, sheetUrl);
+        const emailHtml = buildEmailBody(issues);
 
         // Write that HTML string to disk so the pipeline can send it via emailext
         fs.writeFileSync(HTML_OUTPUT, emailHtml, "utf-8");
